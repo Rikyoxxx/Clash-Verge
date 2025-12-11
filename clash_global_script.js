@@ -724,11 +724,16 @@ function setRules(config) {
    */
   config['rules'] = [
     'DOMAIN-SUFFIX,meta.com,AI服务',
-    'RULE-SET,adblockmihomo,广告过滤',
 
-    'GEOSITE,cn,DIRECT',
-    'GEOSITE,private,DIRECT',
+    'RULE-SET,adblockmihomo,广告过滤',
     'GEOSITE,category-ads-all,广告过滤',
+
+    'GEOSITE,private,DIRECT',
+    'GEOIP,private,DIRECT,no-resolve',
+    'GEOSITE,cn,DIRECT',
+    'GEOIP,CN,DIRECT',
+    'GEOIP,jp,日本专用,no-resolve',
+
     'GEOSITE,github,Github',
     'GEOSITE,google,谷歌服务',
     'GEOSITE,apple-cn,苹果服务',
@@ -751,11 +756,8 @@ function setRules(config) {
     'GEOSITE,category-games@cn,DIRECT',
     'GEOSITE,category-games,游戏服务',
     'GEOSITE,category-bank-jp,日本专用',
-
-    'GEOIP,private,DIRECT,no-resolve',
     'GEOIP,telegram,Telegram',
-    'GEOIP,jp,日本专用,no-resolve',
-    'GEOIP,CN,DIRECT',
+
     'MATCH,默认节点',
   ];
 }
