@@ -251,7 +251,7 @@ function buildRegionalProxyGroups(proxies, groupOption) {
   const strategies = [
     {
       name: '自动选择',
-      key: 'url-test',
+      type: 'url-test',
       defaultOption: {
         /**
          * 节点切换容差，单位 ms
@@ -266,7 +266,7 @@ function buildRegionalProxyGroups(proxies, groupOption) {
     },
     {
       name: '负载均衡',
-      key: 'load-balance',
+      type: 'load-balance',
       defaultOption: {
         /**
          * 负载均衡策略
@@ -281,7 +281,7 @@ function buildRegionalProxyGroups(proxies, groupOption) {
     },
     {
       name: '自动回退',
-      key: 'fallback',
+      type: 'fallback',
       defaultOption: {
         hidden: true,
         icon: 'https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Proxy.png'
@@ -465,14 +465,14 @@ function buildRegionalProxyGroups(proxies, groupOption) {
     if (!region.proxies.length) return;
 
     const functionalProxyNames = [];
-    if (region.name !== '🌐 其他') {
+    if (region.name !== '🌐 其他' && region.proxies.length > 1) {
       strategies.forEach(strategy => {
         const functionalProxyName = `${region.name}[${strategy.name}]`;
         functionalProxyNames.push(functionalProxyName);
         functionalProxyGroups.push({
           ...groupOption,
           name: functionalProxyName,
-          type: strategy.key,
+          type: strategy.type,
           proxies: region.proxies,
           ...strategy.defaultOption,
         });
