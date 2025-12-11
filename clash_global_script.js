@@ -441,7 +441,7 @@ function buildRegionalProxyGroups(proxies, groupOption) {
     },
     {
       name: '🌐 其他',
-      filter: /.*/,
+      filter: /^(?=.*(.))(?!.*(群|邀请|返利|循环|官网|客服|网站|网址|获取|订阅|流量|到期|机场|下次|版本|官址|备用|过期|已用|联系|邮箱|工单|贩卖|通知|倒卖|防止|国内|地址|频道|无法|说明|使用|提示|特别|访问|支持|教程|关注|更新|作者|加入|超时|收藏|福利|邀请|好友|失联|(\b(USE|USED|TOTAL|EXPIRE|EMAIL|Panel|Channel|Author|Traffic)(\d+)?\b|(\d{4}-\d{2}-\d{2}|\dG)))).*$/i,
       proxies: [],
       icon: 'https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Global.png',
     }
@@ -465,17 +465,19 @@ function buildRegionalProxyGroups(proxies, groupOption) {
     if (!region.proxies.length) return;
 
     const functionalProxyNames = [];
-    strategies.forEach(strategy => {
-      const functionalProxyName = `${region.name}[${strategy.name}]`;
-      functionalProxyNames.push(functionalProxyName);
-      functionalProxyGroups.push({
-        ...groupOption,
-        name: functionalProxyName,
-        type: strategy.key,
-        proxies: region.proxies,
-        ...strategy.defaultOption,
+    if (region.name !== '🌐 其他') {
+      strategies.forEach(strategy => {
+        const functionalProxyName = `${region.name}[${strategy.name}]`;
+        functionalProxyNames.push(functionalProxyName);
+        functionalProxyGroups.push({
+          ...groupOption,
+          name: functionalProxyName,
+          type: strategy.key,
+          proxies: region.proxies,
+          ...strategy.defaultOption,
+        });
       });
-    });
+    }
 
     regionalProxyNames.push(region.name);
     regionalProxyGroups.push({
