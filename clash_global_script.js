@@ -728,11 +728,7 @@ function setRules(config) {
     'RULE-SET,adblockmihomo,广告过滤',
     'GEOSITE,category-ads-all,广告过滤',
 
-    'GEOSITE,private,DIRECT',
-    'GEOIP,private,DIRECT,no-resolve',
-    'GEOSITE,cn,DIRECT',
-    'GEOIP,CN,DIRECT',
-    'GEOIP,jp,日本专用,no-resolve',
+
 
     'GEOSITE,github,Github',
     'GEOSITE,google,谷歌服务',
@@ -752,11 +748,17 @@ function setRules(config) {
     'GEOSITE,biliintl,哔哩哔哩国际版',
     'GEOSITE,tiktok,Tiktok',
     'GEOSITE,bahamut,巴哈姆特',
+    'GEOIP,telegram,Telegram',
+
+    'GEOSITE,private,DIRECT',
+    'GEOIP,private,DIRECT,no-resolve',
+    'GEOSITE,cn,DIRECT',
+    'GEOIP,CN,DIRECT,no-resolve',
     'GEOSITE,steam@cn,DIRECT',
     'GEOSITE,category-games@cn,DIRECT',
     'GEOSITE,category-games,游戏服务',
+    'GEOIP,jp,日本专用,no-resolve',
     'GEOSITE,category-bank-jp,日本专用',
-    'GEOIP,telegram,Telegram',
 
     'MATCH,默认节点',
   ];
