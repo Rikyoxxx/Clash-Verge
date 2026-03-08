@@ -65,14 +65,13 @@ function setGlobalConfig(config) {
   config['geox-url'] = {
     geoip: "https://testingcf.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@release/geoip.dat",
     geosite: "https://testingcf.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@release/geosite.dat",
-    mmdb: "https://testingcf.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@release/country.mmdb",
-    asn: "https://github.com/xishang0128/geoip/releases/download/latest/GeoLite2-ASN.mmdb",
+    asn: "https://testingcf.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@release/GeoLite2-ASN.mmdb",
   };
   /**
    * 自定全局 UA
    * 自定义外部资源下载时使用的的 UA，默认为 clash.meta
    */
-  config['global-ua'] = 'chrome';
+  config['global-ua'] = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/133.0.0.0 Safari/537.36';
 }
 
 function setDnsConfig(config) {
@@ -123,32 +122,47 @@ function setDnsConfig(config) {
      * fakeip 下的 IP 段设置，tun 的默认 IPV4 地址 也使用此值作为参考
      */
     'fake-ip-range': '198.18.0.1/16',
+    'fake-ip-range-v6': 'fc00::/18',
     /**
      * fakeip 过滤，以下地址不会下发 fakeip 映射用于连接
      */
 
     'fake-ip-filter': [
-      // 墙外服务
-      'geosite:gfw',
-      'geosite:google@!cn',
-      'geosite:facebook',
-      'geosite:telegram',
-      'geosite:twitter',
-      'geosite:youtube',
-      // AI 服务
-      'geosite:category-ai-!cn',
-      'geosite:category-ai-chat-!cn',
-      // 游戏相关
-      'geosite:category-games-!cn',
-      'geosite:steam@!cn',
-      // 金融/银行相关
-      'geosite:category-bank-cn@!cn',
-      'geosite:category-bank-jp',
+      // 本地/局域网相关
+      '+.lan',
+      '+.local',
+      '+.home.arpa',
+      'localhost.ptlogin2.qq.com',
+      // NTP 服务
+      '+.ntp.org.cn',
+      '+.pool.ntp.org',
+      'time.*.com',
+      'time.*.gov',
+      'time.*.edu.cn',
+      'ntp.*.com',
+      // STUN 服务 (WebRTC)
+      'stun.*.*',
+      'stun.*.*.*',
+      // Windows 网络检测
+      '+.msftconnecttest.com',
+      '+.msftncsi.com',
+      // 游戏相关（需要真实IP的）
+      '+.battlenet.com.cn',
+      '+.blzstatic.cn',
+      // 音乐/流媒体（需要真实IP的国内服务）
+      '+.music.163.com',
+      '+.126.net',
+      'musicapi.taihe.com',
+      'music.taihe.com',
+      '+.y.qq.com',
+      '+.kuwo.cn',
+      '+.kugou.com',
     ],
     /**
-     * 可选 blacklist/whitelist，默认blacklist，whitelist 即只有匹配成功才返回 fake-ip
+     * 可选 blacklist/whitelist，默认blacklist
+     * blacklist 模式下 fake-ip-filter 中的域名不会返回 fake-ip，其他域名都返回 fake-ip
      */
-    'fake-ip-filter-mode': 'whitelist',
+    'fake-ip-filter-mode': 'blacklist',
     /**
      * 是否回应配置中的 hosts，默认 true
      */
@@ -172,9 +186,10 @@ function setDnsConfig(config) {
       'geosite:tld-cn,cn,steam@cn,category-games@cn,microsoft@cn,apple@cn': domesticNameservers,
     },
     /**
-     * 代理节点域名解析服务器，仅用于解析代理节点的域名，如果不填则遵循 nameserver-policy、nameserver 和 fallback 的配置
+     * 代理节点域名解析服务器，仅用于解析代理节点的域名
+     * 使用国内DNS解析，因为机场节点域名通常需要直连解析，不能经过代理（否则产生循环依赖）
      */
-    'proxy-server-nameserver': foreignNameservers,
+    'proxy-server-nameserver': domesticNameservers,
     /**
      * 用于 direct 出口域名解析的 DNS 服务器，如果不填则遵循 nameserver-policy、nameserver 和 fallback 的配置
      */
@@ -202,7 +217,7 @@ function setSnifferConfig(config) {
     /**
      * 对所有未获取到域名的流量进行强制嗅探
      */
-    'parse-pure-ip': false,
+    'parse-pure-ip': true,
     /**
      * 是否使用嗅探结果作为实际访问，默认为 true
      */
@@ -501,7 +516,7 @@ function setProxyGroups(config) {
     /**
      * 健康检查测试地址
      */
-    url: 'http://www.google.com/generate_204',
+    url: 'https://www.gstatic.com/generate_204',
     /**
      * 健康检查间隔，如不为 0 则启用定时测试，单位为秒
      */
@@ -661,7 +676,10 @@ function setProxyGroups(config) {
       ...groupBaseOption,
       name: '巴哈姆特',
       type: 'select',
-      proxies: ['🇨🇳 台湾', 'DIRECT'],
+      proxies: [
+        ...(regionalProxyNames.includes('🇨🇳 台湾') ? ['🇨🇳 台湾'] : ['默认节点']),
+        'DIRECT',
+      ],
       url: 'https://ani.gamer.com.tw/ajax/getdeviceid.php',
       icon: 'https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Bahamut.png',
     },
@@ -676,7 +694,10 @@ function setProxyGroups(config) {
       ...groupBaseOption,
       name: '日本专用',
       type: 'select',
-      proxies: ['🇯🇵 日本', 'DIRECT'],
+      proxies: [
+        ...(regionalProxyNames.includes('🇯🇵 日本') ? ['🇯🇵 日本'] : ['默认节点']),
+        'DIRECT',
+      ],
       url: 'https://r.r10s.jp/com/img/home/logo/touch.png',
       icon: 'https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/JP.png',
     },
@@ -723,13 +744,18 @@ function setRules(config) {
    * 规则
    */
   config['rules'] = [
-    'DOMAIN-SUFFIX,meta.com,AI服务',
+    // --- 精确域名规则 ---
+    'DOMAIN,ai.meta.com,AI服务',
+    'DOMAIN,llama.meta.com,AI服务',
 
+    // --- 广告过滤（优先拦截） ---
     'RULE-SET,adblockmihomo,广告过滤',
     'GEOSITE,category-ads-all,广告过滤',
 
+    // --- 私有网络 ---
+    'GEOSITE,private,DIRECT',
 
-
+    // --- 各服务分流规则 ---
     'GEOSITE,github,Github',
     'GEOSITE,google,谷歌服务',
     'GEOSITE,apple-cn,苹果服务',
@@ -738,6 +764,7 @@ function setRules(config) {
     'GEOSITE,jetbrains-ai,AI服务',
     'GEOSITE,category-ai-!cn,AI服务',
     'GEOSITE,category-ai-chat-!cn,AI服务',
+    'GEOSITE,telegram,Telegram',
     'GEOSITE,whatsapp,WhatsApp',
     'GEOSITE,line,Line',
     'GEOSITE,youtube,YouTube',
@@ -748,24 +775,28 @@ function setRules(config) {
     'GEOSITE,biliintl,哔哩哔哩国际版',
     'GEOSITE,tiktok,Tiktok',
     'GEOSITE,bahamut,巴哈姆特',
-    'GEOIP,telegram,Telegram',
-
-    'GEOSITE,private,DIRECT',
-    'GEOIP,private,DIRECT,no-resolve',
-    'GEOSITE,cn,DIRECT',
-    'GEOIP,CN,DIRECT,no-resolve',
     'GEOSITE,steam@cn,DIRECT',
     'GEOSITE,category-games@cn,DIRECT',
     'GEOSITE,category-games,游戏服务',
-    'GEOIP,jp,日本专用,no-resolve',
     'GEOSITE,category-bank-jp,日本专用',
+
+    // --- 宽泛国内直连（放在服务规则之后，避免误拦截） ---
+    'GEOSITE,cn,DIRECT',
+
+    // --- GEOIP ---
+    'GEOIP,private,DIRECT,no-resolve',
+    'GEOIP,CN,DIRECT,no-resolve',
+    'GEOIP,jp,日本专用,no-resolve',
+    'GEOIP,telegram,Telegram,no-resolve',
 
     'MATCH,默认节点',
   ];
 }
 
 function main(config) {
-  const proxyCount = config?.proxies?.length ?? 0;
+  if (!config.proxies) config.proxies = [];
+
+  const proxyCount = config.proxies.length ?? 0;
   const proxyProviderCount =
     typeof config?.['proxy-providers'] === 'object'
       ? Object.keys(config['proxy-providers']).length
