@@ -465,7 +465,7 @@ function buildRegionalProxyGroups(proxies, groupOption) {
   for (const proxy of proxies) {
     const name = proxy.name
     for (const region of regions) {
-      if (region.filter.test(name)) {
+      if (region.filter.test(name) && !name.startsWith('[DRIP]')) {
         region.proxies.push(name);
         break;
       }
@@ -550,7 +550,7 @@ function setProxyGroups(config) {
       ...groupBaseOption,
       name: '默认节点',
       type: 'select',
-      proxies: [...regionalProxyNames, 'DIRECT'],
+      proxies: [...regionalProxyNames, '🏠 动态住宅IP', 'DIRECT'],
       icon: 'https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Available.png',
     },
     {
@@ -572,7 +572,7 @@ function setProxyGroups(config) {
       ...groupBaseOption,
       name: '苹果服务',
       type: 'select',
-      proxies: ['默认节点', ...regionalProxyNames],
+      proxies: ['默认节点', ...regionalProxyNames, 'DIRECT'],
       url: 'http://www.apple.com/library/test/success.html',
       icon: 'https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Apple_2.png',
     },
@@ -580,7 +580,7 @@ function setProxyGroups(config) {
       ...groupBaseOption,
       name: '微软服务',
       type: 'select',
-      proxies: ['默认节点', ...regionalProxyNames],
+      proxies: ['默认节点', ...regionalProxyNames, 'DIRECT'],
       url: 'http://www.msftconnecttest.com/connecttest.txt',
       icon: 'https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Microsoft.png',
     },
@@ -708,7 +708,14 @@ function setProxyGroups(config) {
       proxies: ['REJECT', 'DIRECT'],
       icon: 'https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Advertising.png',
     },
-    ...reginalProxyGroups
+    ...reginalProxyGroups,
+    {
+      ...groupBaseOption,
+      name: '🏠 动态住宅IP',
+      type: 'select',
+      proxies: ['[DRIP] United States | OR', 'DIRECT'],
+      icon: 'https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Auto.png',
+    }
   ];
 }
 
